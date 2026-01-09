@@ -1,4 +1,4 @@
-# AIW - AI Web 助手
+# AIW - AI智能建站系统
 
 [![GitHub release](https://img.shields.io/github/v/release/houlaoge/aiw)](https://github.com/houlaoge/aiw/releases/latest)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
