@@ -101,7 +101,7 @@ restart_and_verify_service() {
     while [ ${WAIT_COUNT} -lt ${MAX_WAIT} ]; do
         if systemctl is-active --quiet "${SERVICE_NAME}.service"; then
             echo -e "================================================================================"
-            echo -e "\n${SERVICE_DESC} 部署完成已启动！"
+            # echo -e "\n${SERVICE_DESC} 下载完成"
             # 输出服务状态摘要
             # systemctl status "${SERVICE_NAME}.service" --no-pager | grep -E "Active|Main PID"
             return 0
@@ -116,9 +116,34 @@ restart_and_verify_service() {
     exit 1
 }
 
+# 等待服务端口就绪
+wait_for_port_ready() {
+    # 直接启动journalctl，用grep过滤（仅匹配新增日志，无Terminated提示）
+    # 核心：用exec重定向+子shell彻底屏蔽所有脚本提示
+    exec 3>&1
+    journalctl -u "$SERVICE_NAME" -f --no-pager -o cat 2>/dev/null | {
+        # 第一步：跳过历史日志（前10行）
+        local skip_count=0
+        while IFS= read -r line; do
+            if [ $skip_count -lt 10 ]; then
+                skip_count=$((skip_count+1))
+                continue
+            fi
+            # 第二步：实时输出服务日志
+            echo "$line" >&3
+            # 第三步：匹配关键词则退出
+            if [[ "$line" == *"端口均已就绪"* ]]; then
+                exit 0
+            fi
+        done
+    }
+    exec 3>&-
+    return 0
+}
+
 # 主执行流程
 main() {
-    echo "开始部署 ${SERVICE_DESC}"
+    echo "开始下载安装包..."
     echo "================================================================================"
 
     # 1. 检查root权限
@@ -135,7 +160,11 @@ main() {
 
     # 5. 重启并验证服务
     restart_and_verify_service
+
+    # 6. 等待端口就绪
+    wait_for_port_ready
     echo -e "\n输入命令 aiw 回车，打开服务管理工具\n\n\n"
+
 }
 
 # 执行主函数
