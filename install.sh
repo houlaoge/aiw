@@ -93,7 +93,9 @@ restart_and_verify_service() {
     # 设置开机自启
     systemctl enable "${SERVICE_NAME}.service" > /dev/null 2>&1
     # 重启服务（无论是否已运行）
-    systemctl restart "${SERVICE_NAME}.service"
+    systemctl stop "${SERVICE_NAME}.service"
+    sleep 1
+    systemctl start "${SERVICE_NAME}.service"
 
     # 验证服务是否启动成功（最多等待10秒）
     MAX_WAIT=10
@@ -118,27 +120,22 @@ restart_and_verify_service() {
 
 # 等待服务端口就绪
 wait_for_port_ready() {
-    # 直接启动journalctl，用grep过滤（仅匹配新增日志，无Terminated提示）
-    # 核心：用exec重定向+子shell彻底屏蔽所有脚本提示
-    exec 3>&1
-    journalctl -u "$SERVICE_NAME" -f --no-pager -o cat 2>/dev/null | {
-        # 第一步：跳过历史日志（前10行）
-        local skip_count=0
-        while IFS= read -r line; do
-            if [ $skip_count -lt 10 ]; then
-                skip_count=$((skip_count+1))
-                continue
-            fi
-            # 第二步：实时输出服务日志
-            echo "$line" >&3
-            # 第三步：匹配关键词则退出
-            if [[ "$line" == *"端口均已就绪"* ]]; then
-                exit 0
-            fi
-        done
-    }
-    exec 3>&-
-    return 0
+    # 获取当前时间戳，只监听此后的日志
+    local start_time=$(date +"%Y-%m-%d %H:%M:%S")
+    
+    # 使用stdbuf确保实时输出
+    stdbuf -oL -eL journalctl -u "$SERVICE_NAME" -f --no-pager -o cat --since="$start_time" 2>/dev/null | \
+    while IFS= read -r line; do
+        # 实时输出新日志
+        echo "$line"
+        
+        if [[ "$line" == *"启动成功"* ]]; then
+            pkill -f "journalctl.*-u.*$SERVICE_NAME" 2>/dev/null
+            return 0
+        fi
+    done
+    
+    return 1
 }
 
 # 主执行流程
