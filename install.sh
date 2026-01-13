@@ -120,21 +120,30 @@ restart_and_verify_service() {
 
 # 等待服务端口就绪
 wait_for_port_ready() {
-    # 获取当前时间戳，只监听此后的日志
     local start_time=$(date +"%Y-%m-%d %H:%M:%S")
     
-    # 使用stdbuf确保实时输出
-    stdbuf -oL -eL journalctl -u "$SERVICE_NAME" -f --no-pager -o cat --since="$start_time" 2>/dev/null | \
+    # 创建命名管道
+    local pipe=$(mktemp -u)
+    mkfifo "$pipe"
+    
+    # 启动 journalctl 并将其输出重定向到命名管道
+    stdbuf -oL -eL journalctl -u "$SERVICE_NAME" -f --no-pager -o cat --since="$start_time" 2>/dev/null > "$pipe" &
+    local journal_pid=$!
+    
+    # 从命名管道读取
     while IFS= read -r line; do
-        # 实时输出新日志
         echo "$line"
         
-        if [[ "$line" == *"启动成功"* ]]; then
-            pkill -f "journalctl.*-u.*$SERVICE_NAME" 2>/dev/null
+        if [[ "$line" == *"服务启动成功"* ]]; then
+            kill "$journal_pid" 2>/dev/null
+            rm -f "$pipe"
             return 0
         fi
-    done
+    done < "$pipe"
     
+    # 清理
+    kill "$journal_pid" 2>/dev/null
+    rm -f "$pipe"
     return 1
 }
 
@@ -160,7 +169,7 @@ main() {
 
     # 6. 等待端口就绪
     wait_for_port_ready
-    echo -e "\n输入命令 aiw 回车，打开服务管理工具\n\n\n"
+    echo -e "\n输入命令 aiw 回车，打开服务管理工具\n\n"
 
 }
 
