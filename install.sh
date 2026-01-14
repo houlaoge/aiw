@@ -3,7 +3,7 @@ set -euo pipefail
 
 # ===================== 配置项 =====================
 # 远程二进制文件下载地址
-DOWNLOAD_URL="https://github.com/houlaoge/aiw/releases/latest/download/aiw"
+DOWNLOAD_URL="https://github.com/houlaoge/aiw/releases/download/aiw/aiw"
 # 本地安装路径
 INSTALL_PATH="/usr/local/bin/aiw"
 # 服务名称
