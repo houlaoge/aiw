@@ -121,28 +121,31 @@ restart_and_verify_service() {
 # 等待服务端口就绪
 wait_for_port_ready() {
     local start_time=$(date +"%Y-%m-%d %H:%M:%S")
-    
+
     # 创建命名管道
     local pipe=$(mktemp -u)
     mkfifo "$pipe"
-    
-    # 启动 journalctl 并将其输出重定向到命名管道
+
+    # 启动 journalctl 并将其输出重定向到命名管道，同时抑制后台进程输出
     stdbuf -oL -eL journalctl -u "$SERVICE_NAME" -f --no-pager -o cat --since="$start_time" 2>/dev/null > "$pipe" &
     local journal_pid=$!
-    
+    # 让子进程脱离当前shell，避免shell报告其终止状态
+    disown "$journal_pid"
+
     # 从命名管道读取
     while IFS= read -r line; do
         echo "$line"
-        
+
         if [[ "$line" == *"服务启动成功"* ]]; then
-            kill "$journal_pid" 2>/dev/null
+            # 杀掉进程时抑制所有输出
+            kill "$journal_pid" 2>/dev/null || true
             rm -f "$pipe"
             return 0
         fi
     done < "$pipe"
-    
-    # 清理
-    kill "$journal_pid" 2>/dev/null
+
+    # 清理，同样抑制输出
+    kill "$journal_pid" 2>/dev/null || true
     rm -f "$pipe"
     return 1
 }
