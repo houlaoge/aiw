@@ -5,9 +5,10 @@
 [![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-green.svg)]()
 [![Go Version](https://img.shields.io/badge/go-%3E%3D1.19-blue)]()
 
-AI Web 是一款集AI智能搭建静态网站的全栈式Web建站系统
-根据指令自动搭建网站首页、栏目页，每日定时生成文章内容页等
-通过人工智能技术彻底革新传统网站建设与运营模式，为企业、开发者、营销团队提供前所未有的自动化与智能化体验
+
+根据指令自动搭建：网站首页、栏目页，每日定时生成文章内容页等
+
+- 纯静态建站，搜索引擎友好
 - 自动提交搜索引擎
 - 谷歌、必应均可7天收录，百度4周收录
 
