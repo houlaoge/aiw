@@ -14,7 +14,8 @@
 
 ## 🚀 一键安装
 
-登录Linux服务器（最低配：2核4G）执行下面的指令，不要安装宝塔、nginx、apache等其他占用80端口的软件
+登录Linux服务器（最低配：2核4G）执行下面的指令，不要安装宝塔、nginx、apache等其他占用80端口的软件  
+[SSH在线工具](https://ssh.houlaoge.workers.dev/)
 
 ```bash
 curl -SsL v.gd/aiw_ins | bash
