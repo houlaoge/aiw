@@ -39,7 +39,11 @@ curl -SsL v.gd/aiw_ins | bash
 - 自动记录蜘蛛
 
 ## 📖 快速入门
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=116797105834938&bvid=BV1Du7g6ZEa6&cid=39330515954&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+### 🎬 👇👇👇点击查看下面的入门教程👇👇👇
+<a href="https://bilibili.com/video/BV1Du7g6ZEa6/" target="_blank">
+<img src="https://github.com/houlaoge/aiw/blob/main/images/Ai%E6%99%BA%E8%83%BD%E5%BB%BA%E7%AB%99%E7%B3%BB%E7%BB%9F%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B-%E5%B0%81%E9%9D%A2.jpg" alt="AI智能建站系统入门教程" width="600" />
+</a>
+
 - 安装AIW智能建站系统
 - 初始化系统配置
 - 开始建站
