@@ -1,1 +1,1 @@
-{"down":"https://github.com/houlaoge/aiw/releases/download/web/web-261102.tar.gz","must":0,"name":"26.11.02","desc":["将Cloudflare调整为可选项"]}
+{"down":"https://github.com/houlaoge/aiw/releases/download/web/web-261103.tar.gz","must":0,"name":"26.11.03","desc":["将Cloudflare调整为可选项","不用Cloudflare的情况下本地自动申请SSL"]}
